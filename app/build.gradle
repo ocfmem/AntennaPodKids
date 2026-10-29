@@ -9,7 +9,6 @@ android {
     namespace "de.danoeh.antennapod"
 
     defaultConfig {
-        // AntennaPod Kids installs next to the official app; namespace (R, BuildConfig) is unchanged.
         applicationId "de.danoeh.antennapod.kids"
         // Version code schema:
         // "1.2.3-beta4"    -> 1020304

@@ -185,7 +185,7 @@ public class ShownotesWebView extends WebView implements View.OnLongClickListene
             menu.add(Menu.NONE, R.id.go_to_position_item, Menu.NONE, R.string.go_to_position_label);
             menu.setHeaderTitle(Converter.getDurationStringLong(ShownotesCleaner.getTimecodeLinkTime(selectedUrl)));
         } else if (UserPreferences.isKidLockActive()) {
-            return; // Kid lock: web links can be neither opened, copied nor shared
+            return;
         } else {
             Uri uri = Uri.parse(selectedUrl);
             final Intent intent = new Intent(Intent.ACTION_VIEW, uri);

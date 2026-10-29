@@ -28,7 +28,6 @@ public class ShareUtils {
     private ShareUtils() {
     }
 
-    /** Kid lock: nothing leaves the app through the share sheet. */
     private static boolean isSharingBlocked(Context context) {
         if (UserPreferences.isKidLockActive()) {
             Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();

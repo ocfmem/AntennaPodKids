@@ -75,9 +75,7 @@ public abstract class UserPreferences {
     public static final String PREF_PARENTAL_CONTROL_ENABLED = "prefParentalControlEnabled";
     public static final String PREF_PARENTAL_CONTROL_REQUIRE_SUBSCRIBE = "prefParentalControlRequireSubscribe";
     public static final String PREF_KID_LOCK_ENABLED = "prefKidLockEnabled";
-    /** Boolean app restriction through which a device-owner app (e.g. a kiosk) drives the kid lock. */
     public static final String RESTRICTION_KID_LOCK = "kid_lock";
-    /** AddFeedFragment.TAG (app module): removed from the drawer and bottom navigation under the kid lock. */
     private static final String KID_LOCK_HIDDEN_SECTION = "AddFeedFragment";
     private static final String PASSWORD_HASH_PREFIX = "pbkdf2:";
     private static final int PASSWORD_HASH_ITERATIONS = 10_000;
@@ -215,7 +213,6 @@ public abstract class UserPreferences {
             return false;
         }
         if (!stored.startsWith(PASSWORD_HASH_PREFIX)) {
-            // Plain text, as stored by upstream AntennaPod: compare, then keep it hashed from now on.
             boolean matches = stored.equals(password);
             if (matches) {
                 setParentalControlPassword(password);
@@ -229,7 +226,6 @@ public abstract class UserPreferences {
         return MessageDigest.isEqual(expected, hashPassword(password, salt, iterations));
     }
 
-    /** Stores the password as "pbkdf2:iterations:salt:hash", never in plain text. */
     public static void setParentalControlPassword(String password) {
         byte[] salt = new byte[16];
         new SecureRandom().nextBytes(salt);
@@ -239,7 +235,6 @@ public abstract class UserPreferences {
                 + ":" + Base64.encodeToString(hash, Base64.NO_WRAP)).apply();
     }
 
-    /** PBKDF2 with HMAC-SHA1: the only PBKDF2 variant on every supported Android version (API 23+). */
     private static byte[] hashPassword(String password, byte[] salt, int iterations) {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 256);
@@ -257,11 +252,6 @@ public abstract class UserPreferences {
         return prefs.getBoolean(PREF_PARENTAL_CONTROL_REQUIRE_SUBSCRIBE, true);
     }
 
-    /**
-     * Kid lock: hides online search and every way to add a podcast, locks the settings and
-     * blocks external links and sharing. A managed configuration set by a device-owner app
-     * takes precedence; otherwise the local switch applies, which needs a parental password.
-     */
     public static boolean isKidLockActive() {
         Boolean managed = managedKidLock;
         if (managed != null) {
@@ -270,12 +260,10 @@ public abstract class UserPreferences {
         return isParentalControlPasswordSet() && prefs.getBoolean(PREF_KID_LOCK_ENABLED, false);
     }
 
-    /** True when a device-owner app drives the kid lock, so the local switch has no effect. */
     public static boolean isKidLockManaged() {
         return managedKidLock != null;
     }
 
-    /** Re-reads the managed configuration; call when ACTION_APPLICATION_RESTRICTIONS_CHANGED arrives. */
     public static void refreshManagedKidLock() {
         RestrictionsManager restrictions = context == null ? null
                 : (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);

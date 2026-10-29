@@ -1003,6 +1003,13 @@
     <string name="pref_parental_control_enabled_title">Enable</string>
     <string name="pref_parental_control_require_subscribe_title">Restrict subscribing</string>
     <string name="pref_parental_control_require_subscribe_sum">Ask for the parental control password when subscribing to new podcasts</string>
+    <string name="restriction_kid_lock_title">Kid lock</string>
+    <string name="restriction_kid_lock_description">Hide online search and adding podcasts, lock the settings and block external links and sharing.</string>
+    <string name="pref_kid_lock_title">Kid lock</string>
+    <string name="pref_kid_lock_sum">Hide online search and adding podcasts, lock the settings and block external links and sharing</string>
+    <string name="pref_kid_lock_managed_sum">Controlled by the device administrator (kiosk)</string>
+    <string name="kid_lock_settings_locked">Settings are locked by the device administrator. Pause the kiosk to change them.</string>
+    <string name="kid_lock_blocked">Not available while the kid lock is on</string>
 
     <!-- Echo -->
     <string name="antennapod_echo" translatable="false">AntennaPod Echo</string>

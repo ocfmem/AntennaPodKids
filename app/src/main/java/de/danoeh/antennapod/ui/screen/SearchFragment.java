@@ -437,7 +437,7 @@ public class SearchFragment extends Fragment implements EpisodeItemListAdapter.O
                 || activeFilter.showInHistory || activeFilter.showPaused;
         boolean isSearchingFeed = feed != 0;
         updateChipVisibility();
-        boolean kidLock = UserPreferences.isKidLockActive(); // Kid lock: local search only
+        boolean kidLock = UserPreferences.isKidLockActive();
         adapterFeeds.setEndButton(R.string.search_online,
                 (isSearchingFeed || hasEpisodeFilter || kidLock) ? null : this::searchOnline);
 

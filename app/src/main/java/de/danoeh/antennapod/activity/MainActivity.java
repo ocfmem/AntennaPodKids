@@ -422,8 +422,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         Log.d(TAG, "loadFragment(tag: " + tag + ", args: " + args + ")");
         if (UserPreferences.isKidLockActive()
                 && (AddFeedFragment.TAG.equals(tag) || DiscoveryFragment.TAG.equals(tag))) {
-            // Kid lock: every route to adding or discovering podcasts (drawer, bottom navigation,
-            // intent extra, restored last page) lands on the home screen instead.
             tag = HomeFragment.TAG;
             args = null;
         }
@@ -585,7 +583,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        if (!UserPreferences.isKidLockActive()) { // Kid lock: no rating prompt leading to the Play Store
+        if (!UserPreferences.isKidLockActive()) {
             new RatingDialogManager(this).showIfNeeded();
         }
         getOnBackPressedDispatcher().addCallback(this, openDefaultPageBackPressedCallback);
@@ -598,7 +596,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         handleNavIntent();
 
         boolean hasBottomNavigation = bottomNavigation != null;
-        // The kid lock may have changed while away (kiosk pause), so menus and navigation are rebuilt.
         UserPreferences.refreshManagedKidLock();
         if (lastTheme != ThemeSwitcher.getNoTitleTheme(this)
                 || hasBottomNavigation != UserPreferences.isBottomNavigationEnabled()

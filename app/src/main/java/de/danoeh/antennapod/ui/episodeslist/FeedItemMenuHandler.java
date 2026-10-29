@@ -105,7 +105,6 @@ public class FeedItemMenuHandler {
             }
         }
         if (UserPreferences.isKidLockActive()) {
-            // Kid lock: no website, comments page or share sheet.
             canVisitWebsite = false;
             canShare = false;
             canShowSocialInteract = false;

@@ -58,7 +58,6 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
         }
         if (UserPreferences.isKidLockActive() && !kidLockUnlocked) {
             if (UserPreferences.isKidLockManaged()) {
-                // Kid lock from a device-owner app: settings open only once it lifts the lock.
                 Toast.makeText(this, R.string.kid_lock_settings_locked, Toast.LENGTH_LONG).show();
                 finish();
                 return;

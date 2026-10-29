@@ -95,7 +95,6 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
         setTheme(ThemeSwitcher.getTranslucentTheme(this));
         super.onCreate(savedInstanceState);
         if (UserPreferences.isKidLockActive()) {
-            // Kid lock: podcasts can neither be previewed nor subscribed to.
             Toast.makeText(this, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
             finish();
             return;

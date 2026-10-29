@@ -27,7 +27,6 @@ public abstract class IntentUtils {
 
     public static void openInBrowser(Context context, String url) {
         if (UserPreferences.isKidLockActive()) {
-            // Kid lock: every link to the web (show notes, chapters, websites) ends here.
             Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
             return;
         }

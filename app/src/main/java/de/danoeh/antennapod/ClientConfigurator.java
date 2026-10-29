@@ -45,7 +45,6 @@ public class ClientConfigurator {
         }
         PodDBAdapter.init(context);
         UserPreferences.init(context);
-        // Kid lock: follow the managed configuration when a device-owner app (e.g. a kiosk) changes it.
         ContextCompat.registerReceiver(context.getApplicationContext(), new BroadcastReceiver() {
             @Override
             public void onReceive(Context receiverContext, Intent intent) {

@@ -25,7 +25,6 @@ public class DrawerPreferencesDialog extends ReorderDialog {
     @Override
     public void show() {
         if (UserPreferences.isKidLockActive()) {
-            // Kid lock: the navigation cannot be rearranged.
             Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
             return;
         }

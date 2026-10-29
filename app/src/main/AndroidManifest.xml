@@ -100,7 +100,6 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             android:launchMode="singleTask"
             android:exported="true">
-            <!-- Kids: no antennapod.org deep links, they belong to the official app. -->
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="de.danoeh.antennapod.intents.MAIN_ACTIVITY" />
@@ -126,7 +125,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/opml_import_label"
             android:exported="false">
-            <!-- Kids: only opened from inside the app, other apps cannot hand it a feed list. -->
         </activity>
 
         <activity
@@ -168,8 +166,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.danoeh.antennapod.activity.MainActivity"/>
 
-            <!-- Kids: no podcast links, protocols, share target or deep links from other apps;
-                 only the app itself opens this screen. -->
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="de.danoeh.antennapod.intents.ONLINE_FEEDVIEW" />
@@ -195,7 +191,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
-        <!-- Kids: no Assistant App Actions, they rely on the removed antennapod.org deep links. -->
 
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"

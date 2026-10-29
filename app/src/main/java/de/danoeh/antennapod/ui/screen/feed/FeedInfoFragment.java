@@ -221,7 +221,6 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
 
         boolean kidLock = UserPreferences.isKidLockActive();
         if (kidLock) {
-            // Kid lock: no clickable funding links, no text selection offering share or web search.
             viewBinding.supportHeadingLabel.setVisibility(View.GONE);
             viewBinding.supportUrl.setVisibility(View.GONE);
             viewBinding.descriptionLabel.setTextIsSelectable(false);
@@ -232,7 +231,6 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
             viewBinding.statisticsFragmentContainer.setVisibility(View.GONE);
             viewBinding.supportHeadingLabel.setVisibility(View.GONE);
             viewBinding.supportUrl.setVisibility(View.GONE);
-            // Kid lock: a feed left over from an earlier preview cannot be subscribed to either.
             viewBinding.header.butSubscribe.setVisibility(kidLock ? View.GONE : View.VISIBLE);
             viewBinding.header.butSubscribe.setOnClickListener(view -> {
                 DBWriter.setFeedState(getContext(), feed, Feed.STATE_SUBSCRIBED);
@@ -267,7 +265,7 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
 
     private void refreshToolbarState() {
         boolean isSubscribed = feed != null && feed.getState() == Feed.STATE_SUBSCRIBED;
-        boolean kidLock = UserPreferences.isKidLockActive(); // Kid lock: no website or share sheet
+        boolean kidLock = UserPreferences.isKidLockActive();
         viewBinding.toolbar.getMenu().findItem(R.id.share_item).setVisible(isSubscribed && !feed.isLocalFeed()
                 && !kidLock);
         viewBinding.toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(isSubscribed && !kidLock

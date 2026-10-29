@@ -93,7 +93,6 @@ public class Media3VideoPlayerActivity extends AppCompatActivity implements Tool
         toolbar.getMenu().findItem(R.id.player_show_chapters).setVisible(true);
         toolbar.getMenu().findItem(R.id.audio_controls).setVisible(true);
         if (UserPreferences.isKidLockActive()) {
-            // Kid lock: no website or share sheet.
             toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(false);
             toolbar.getMenu().findItem(R.id.share_item).setVisible(false);
         }
