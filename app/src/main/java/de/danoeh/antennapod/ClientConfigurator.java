@@ -1,7 +1,11 @@
 package de.danoeh.antennapod;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
+import androidx.core.content.ContextCompat;
 import android.content.pm.PackageManager;
 import de.danoeh.antennapod.net.download.service.episode.autodownload.AutoDownloadManagerImpl;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
@@ -41,6 +45,13 @@ public class ClientConfigurator {
         }
         PodDBAdapter.init(context);
         UserPreferences.init(context);
+        // Kid lock: follow the managed configuration when a device-owner app (e.g. a kiosk) changes it.
+        ContextCompat.registerReceiver(context.getApplicationContext(), new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context receiverContext, Intent intent) {
+                UserPreferences.refreshManagedKidLock();
+            }
+        }, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED);
         SynchronizationCredentials.init(context);
         SynchronizationSettings.init(context);
         UsageStatistics.init(context);

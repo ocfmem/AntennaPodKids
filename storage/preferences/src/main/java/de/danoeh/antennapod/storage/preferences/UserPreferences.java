@@ -1,8 +1,10 @@
 package de.danoeh.antennapod.storage.preferences;
 
 import android.content.Context;
+import android.content.RestrictionsManager;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -65,6 +67,9 @@ public abstract class UserPreferences {
     private static final String PREF_PARENTAL_CONTROL_PASSWORD = "prefParentalControlPassword";
     public static final String PREF_PARENTAL_CONTROL_ENABLED = "prefParentalControlEnabled";
     public static final String PREF_PARENTAL_CONTROL_REQUIRE_SUBSCRIBE = "prefParentalControlRequireSubscribe";
+    public static final String PREF_KID_LOCK_ENABLED = "prefKidLockEnabled";
+    /** Boolean app restriction through which a device-owner app (e.g. a kiosk) drives the kid lock. */
+    public static final String RESTRICTION_KID_LOCK = "kid_lock";
 
     public static final String PREF_GLOBAL_DEFAULT_SORTED_ORDER = "prefGlobalDefaultSortedOrder";
     public static final String PREF_QUEUE_KEEP_SORTED = "prefQueueKeepSorted";
@@ -142,6 +147,8 @@ public abstract class UserPreferences {
 
     private static Context context;
     private static SharedPreferences prefs;
+    @Nullable
+    private static volatile Boolean managedKidLock;
 
     /**
      * Sets up the UserPreferences class.
@@ -155,6 +162,7 @@ public abstract class UserPreferences {
         UserPreferences.prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         createNoMediaFile();
+        refreshManagedKidLock();
     }
 
     public enum ThemePreference {
@@ -205,6 +213,33 @@ public abstract class UserPreferences {
 
     public static boolean isParentalControlRequireSubscribeSet() {
         return prefs.getBoolean(PREF_PARENTAL_CONTROL_REQUIRE_SUBSCRIBE, true);
+    }
+
+    /**
+     * Kid lock: hides online search and every way to add a podcast, locks the settings and
+     * blocks external links and sharing. A managed configuration set by a device-owner app
+     * takes precedence; otherwise the local switch applies, which needs a parental password.
+     */
+    public static boolean isKidLockActive() {
+        Boolean managed = managedKidLock;
+        if (managed != null) {
+            return managed;
+        }
+        return isParentalControlPasswordSet() && prefs.getBoolean(PREF_KID_LOCK_ENABLED, false);
+    }
+
+    /** True when a device-owner app drives the kid lock, so the local switch has no effect. */
+    public static boolean isKidLockManaged() {
+        return managedKidLock != null;
+    }
+
+    /** Re-reads the managed configuration; call when ACTION_APPLICATION_RESTRICTIONS_CHANGED arrives. */
+    public static void refreshManagedKidLock() {
+        RestrictionsManager restrictions = context == null ? null
+                : (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);
+        Bundle bundle = restrictions != null ? restrictions.getApplicationRestrictions() : null;
+        managedKidLock = bundle != null && bundle.containsKey(RESTRICTION_KID_LOCK)
+                ? bundle.getBoolean(RESTRICTION_KID_LOCK) : null;
     }
 
     public static boolean getIsBlackTheme() {

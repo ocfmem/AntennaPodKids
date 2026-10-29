@@ -48,6 +48,15 @@ public class ParentalControlPreferencesFragment extends AnimatedPreferenceFragme
         SwitchPreferenceCompat requireSubscribePref =
                 findPreference(UserPreferences.PREF_PARENTAL_CONTROL_REQUIRE_SUBSCRIBE);
         requireSubscribePref.setEnabled(UserPreferences.isParentalControlPasswordSet());
+
+        // The local kid lock needs a password; a device-owner app overrides it entirely.
+        SwitchPreferenceCompat kidLockPref = findPreference(UserPreferences.PREF_KID_LOCK_ENABLED);
+        if (UserPreferences.isKidLockManaged()) {
+            kidLockPref.setEnabled(false);
+            kidLockPref.setSummary(R.string.pref_kid_lock_managed_sum);
+        } else {
+            kidLockPref.setEnabled(UserPreferences.isParentalControlPasswordSet());
+        }
     }
 
     private void showSetNewPasswordDialog() {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Managed configuration, set by a device-owner app (e.g. a kiosk) through
+     DevicePolicyManager.setApplicationRestrictions(). -->
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+    <restriction
+        android:key="kid_lock"
+        android:title="@string/restriction_kid_lock_title"
+        android:description="@string/restriction_kid_lock_description"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+</restrictions>

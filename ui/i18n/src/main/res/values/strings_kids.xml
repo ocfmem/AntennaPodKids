@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AntennaPod Kids strings, kept apart from strings.xml so upstream merges do not conflict. -->
+<resources>
+    <string name="restriction_kid_lock_title">Kid lock</string>
+    <string name="restriction_kid_lock_description">Hide online search and adding podcasts, lock the settings and block external links and sharing.</string>
+    <string name="pref_kid_lock_title">Kid lock</string>
+    <string name="pref_kid_lock_sum">Hide online search and adding podcasts, lock the settings and block external links and sharing</string>
+    <string name="pref_kid_lock_managed_sum">Controlled by the device administrator (kiosk)</string>
+    <string name="kid_lock_settings_locked">Settings are locked by the device administrator. Pause the kiosk to change them.</string>
+    <string name="kid_lock_blocked">Not available while the kid lock is on</string>
+</resources>

@@ -113,11 +113,13 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     private BottomSheetBackPressedCallback bottomSheetBackPressedCallback;
     private OnBackPressedCallback openDefaultPageBackPressedCallback;
     private int lastTheme = 0;
+    private boolean lastKidLock = false;
     private Insets systemBarInsets = Insets.NONE;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         lastTheme = ThemeSwitcher.getNoTitleTheme(this);
+        lastKidLock = UserPreferences.isKidLockActive();
         setTheme(lastTheme);
         if (savedInstanceState != null) {
             ensureGeneratedViewIdGreaterThan(savedInstanceState.getInt(KEY_GENERATED_VIEW_ID, 0));
@@ -587,8 +589,11 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         handleNavIntent();
 
         boolean hasBottomNavigation = bottomNavigation != null;
+        // The kid lock may have changed while away (kiosk pause), so menus and navigation are rebuilt.
+        UserPreferences.refreshManagedKidLock();
         if (lastTheme != ThemeSwitcher.getNoTitleTheme(this)
-                || hasBottomNavigation != UserPreferences.isBottomNavigationEnabled()) {
+                || hasBottomNavigation != UserPreferences.isBottomNavigationEnabled()
+                || lastKidLock != UserPreferences.isKidLockActive()) {
             restartActivity();
         }
         if (UserPreferences.getHiddenDrawerItems().contains(NavDrawerFragment.getLastNavFragment(this))) {

@@ -196,6 +196,10 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
         <!-- Kids: no Assistant App Actions, they rely on the removed antennapod.org deep links. -->
+
+        <meta-data
+            android:name="android.content.APP_RESTRICTIONS"
+            android:resource="@xml/app_restrictions" />
     </application>
 
 </manifest>

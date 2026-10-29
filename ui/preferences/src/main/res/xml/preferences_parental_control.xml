@@ -9,4 +9,9 @@
             android:title="@string/pref_parental_control_require_subscribe_title"
             android:summary="@string/pref_parental_control_require_subscribe_sum"
             android:defaultValue="true"/>
+    <SwitchPreferenceCompat
+            android:key="prefKidLockEnabled"
+            android:title="@string/pref_kid_lock_title"
+            android:summary="@string/pref_kid_lock_sum"
+            android:defaultValue="false"/>
 </PreferenceScreen>
