@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -21,6 +22,10 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -29,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 import de.danoeh.antennapod.model.download.ProxyConfig;
 import de.danoeh.antennapod.model.feed.FeedCounter;
@@ -72,6 +79,8 @@ public abstract class UserPreferences {
     public static final String RESTRICTION_KID_LOCK = "kid_lock";
     /** AddFeedFragment.TAG (app module): removed from the drawer and bottom navigation under the kid lock. */
     private static final String KID_LOCK_HIDDEN_SECTION = "AddFeedFragment";
+    private static final String PASSWORD_HASH_PREFIX = "pbkdf2:";
+    private static final int PASSWORD_HASH_ITERATIONS = 10_000;
 
     public static final String PREF_GLOBAL_DEFAULT_SORTED_ORDER = "prefGlobalDefaultSortedOrder";
     public static final String PREF_QUEUE_KEEP_SORTED = "prefQueueKeepSorted";
@@ -202,11 +211,42 @@ public abstract class UserPreferences {
 
     public static boolean verifyParentalControlPassword(String password) {
         String stored = prefs.getString(PREF_PARENTAL_CONTROL_PASSWORD, null);
-        return stored != null && stored.equals(password);
+        if (stored == null) {
+            return false;
+        }
+        if (!stored.startsWith(PASSWORD_HASH_PREFIX)) {
+            // Plain text, as stored by upstream AntennaPod: compare, then keep it hashed from now on.
+            boolean matches = stored.equals(password);
+            if (matches) {
+                setParentalControlPassword(password);
+            }
+            return matches;
+        }
+        String[] parts = stored.split(":");
+        int iterations = Integer.parseInt(parts[1]);
+        byte[] salt = Base64.decode(parts[2], Base64.NO_WRAP);
+        byte[] expected = Base64.decode(parts[3], Base64.NO_WRAP);
+        return MessageDigest.isEqual(expected, hashPassword(password, salt, iterations));
     }
 
+    /** Stores the password as "pbkdf2:iterations:salt:hash", never in plain text. */
     public static void setParentalControlPassword(String password) {
-        prefs.edit().putString(PREF_PARENTAL_CONTROL_PASSWORD, password).apply();
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        byte[] hash = hashPassword(password, salt, PASSWORD_HASH_ITERATIONS);
+        prefs.edit().putString(PREF_PARENTAL_CONTROL_PASSWORD, PASSWORD_HASH_PREFIX + PASSWORD_HASH_ITERATIONS
+                + ":" + Base64.encodeToString(salt, Base64.NO_WRAP)
+                + ":" + Base64.encodeToString(hash, Base64.NO_WRAP)).apply();
+    }
+
+    /** PBKDF2 with HMAC-SHA1: the only PBKDF2 variant on every supported Android version (API 23+). */
+    private static byte[] hashPassword(String password, byte[] salt, int iterations) {
+        try {
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 256);
+            return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public static void clearParentalControlPassword() {
