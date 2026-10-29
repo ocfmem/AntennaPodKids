@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
@@ -37,7 +38,7 @@ public abstract class FeedMenuHandler {
         setItemVisibility(menu, R.id.remove_archive_feed, !allArchived && allSubscribed);
         setItemVisibility(menu, R.id.remove_restore_feed, allArchived);
         boolean singleNonLocalFeedSelected = selectedItems.size() == 1 && !selectedItems.get(0).isLocalFeed();
-        setItemVisibility(menu, R.id.share_feed, singleNonLocalFeedSelected);
+        setItemVisibility(menu, R.id.share_feed, singleNonLocalFeedSelected && !UserPreferences.isKidLockActive());
         return true;
     }
 

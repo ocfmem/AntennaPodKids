@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.databinding.Media3VideoPlayerActivityBinding;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.playback.service.Media3PlaybackService;
@@ -91,6 +92,11 @@ public class Media3VideoPlayerActivity extends AppCompatActivity implements Tool
         toolbar.getMenu().findItem(R.id.playback_speed).setVisible(true);
         toolbar.getMenu().findItem(R.id.player_show_chapters).setVisible(true);
         toolbar.getMenu().findItem(R.id.audio_controls).setVisible(true);
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: no website or share sheet.
+            toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(false);
+            toolbar.getMenu().findItem(R.id.share_item).setVisible(false);
+        }
 
         viewBinding.controlsView.setListener(new VideoPlayerControlsView.ControlsListener() {
             @Override

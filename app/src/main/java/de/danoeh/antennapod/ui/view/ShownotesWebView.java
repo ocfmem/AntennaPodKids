@@ -32,6 +32,7 @@ import de.danoeh.antennapod.ui.MenuItemUtils;
 import de.danoeh.antennapod.ui.common.Converter;
 import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.net.common.NetworkUtils;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.share.ShareUtils;
 import de.danoeh.antennapod.ui.cleaner.ShownotesCleaner;
 import org.greenrobot.eventbus.EventBus;
@@ -183,6 +184,8 @@ public class ShownotesWebView extends WebView implements View.OnLongClickListene
         if (ShownotesCleaner.isTimecodeLink(selectedUrl)) {
             menu.add(Menu.NONE, R.id.go_to_position_item, Menu.NONE, R.string.go_to_position_label);
             menu.setHeaderTitle(Converter.getDurationStringLong(ShownotesCleaner.getTimecodeLinkTime(selectedUrl)));
+        } else if (UserPreferences.isKidLockActive()) {
+            return; // Kid lock: web links can be neither opened, copied nor shared
         } else {
             Uri uri = Uri.parse(selectedUrl);
             final Intent intent = new Intent(Intent.ACTION_VIEW, uri);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ShareCompat;
@@ -17,6 +18,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 /** Utility methods for sharing data */
 public class ShareUtils {
@@ -26,7 +28,19 @@ public class ShareUtils {
     private ShareUtils() {
     }
 
+    /** Kid lock: nothing leaves the app through the share sheet. */
+    private static boolean isSharingBlocked(Context context) {
+        if (UserPreferences.isKidLockActive()) {
+            Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
+
     public static void shareLink(@NonNull Context context, @NonNull String text) {
+        if (isSharingBlocked(context)) {
+            return;
+        }
         Intent intent = new ShareCompat.IntentBuilder(context)
                 .setType("text/plain")
                 .setText(text)
@@ -93,6 +107,9 @@ public class ShareUtils {
     }
 
     public static void shareFeedItemFile(Context context, FeedMedia media) {
+        if (isSharingBlocked(context)) {
+            return;
+        }
         Uri fileUri = FileProvider.getUriForFile(context, context.getString(R.string.provider_authority),
                 new File(media.getLocalFileUrl()));
 

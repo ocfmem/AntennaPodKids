@@ -104,6 +104,12 @@ public class FeedItemMenuHandler {
                 canRemoveFavorite = false;
             }
         }
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: no website, comments page or share sheet.
+            canVisitWebsite = false;
+            canShare = false;
+            canShowSocialInteract = false;
+        }
 
         setItemVisibility(menu, R.id.skip_episode_item, canSkip);
         setItemVisibility(menu, R.id.remove_from_queue_item, canRemoveFromQueue);

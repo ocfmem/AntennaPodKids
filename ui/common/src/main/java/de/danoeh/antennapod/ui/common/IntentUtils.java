@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 public abstract class IntentUtils {
     private static final String TAG = "IntentUtils";
@@ -25,6 +26,11 @@ public abstract class IntentUtils {
     }
 
     public static void openInBrowser(Context context, String url) {
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: every link to the web (show notes, chapters, websites) ends here.
+            Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
             Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

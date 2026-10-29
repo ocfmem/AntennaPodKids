@@ -46,7 +46,8 @@ public class FinalShareScreen extends EchoScreen {
         viewBinding.actionButton.setOnClickListener(v -> share());
         viewBinding.actionButton.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(
                 context.getResources(), R.drawable.ic_share, context.getTheme()), null, null, null);
-        viewBinding.actionButton.setVisibility(View.VISIBLE);
+        // Kid lock: the yearly recap cannot be shared.
+        viewBinding.actionButton.setVisibility(UserPreferences.isKidLockActive() ? View.GONE : View.VISIBLE);
         viewBinding.actionButton.setText(R.string.share_label);
         background = new FinalShareBackground(context, favoritePodNames, favoritePodImages);
         viewBinding.backgroundImage.setImageDrawable(background);

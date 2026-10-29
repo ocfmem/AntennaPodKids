@@ -271,7 +271,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
         viewBinding.toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(feed.getLink() != null);
         viewBinding.toolbar.getMenu().findItem(R.id.refresh_complete_item).setVisible(feed.isPaged());
-        if (StringUtils.isBlank(feed.getLink())) {
+        if (StringUtils.isBlank(feed.getLink()) || UserPreferences.isKidLockActive()) {
             viewBinding.toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(false);
         }
         if (feed.getState() == Feed.STATE_NOT_SUBSCRIBED) {

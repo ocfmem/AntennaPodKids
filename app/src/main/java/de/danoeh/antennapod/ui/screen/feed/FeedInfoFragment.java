@@ -22,6 +22,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.databinding.FeedinfoBinding;
 import de.danoeh.antennapod.event.MessageEvent;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
@@ -218,12 +219,21 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
             viewBinding.supportUrl.setText(str.toString());
         }
 
+        boolean kidLock = UserPreferences.isKidLockActive();
+        if (kidLock) {
+            // Kid lock: no clickable funding links, no text selection offering share or web search.
+            viewBinding.supportHeadingLabel.setVisibility(View.GONE);
+            viewBinding.supportUrl.setVisibility(View.GONE);
+            viewBinding.descriptionLabel.setTextIsSelectable(false);
+        }
+
         if (feed.getState() == Feed.STATE_NOT_SUBSCRIBED) {
             viewBinding.statisticsHeading.setVisibility(View.GONE);
             viewBinding.statisticsFragmentContainer.setVisibility(View.GONE);
             viewBinding.supportHeadingLabel.setVisibility(View.GONE);
             viewBinding.supportUrl.setVisibility(View.GONE);
-            viewBinding.header.butSubscribe.setVisibility(View.VISIBLE);
+            // Kid lock: a feed left over from an earlier preview cannot be subscribed to either.
+            viewBinding.header.butSubscribe.setVisibility(kidLock ? View.GONE : View.VISIBLE);
             viewBinding.header.butSubscribe.setOnClickListener(view -> {
                 DBWriter.setFeedState(getContext(), feed, Feed.STATE_SUBSCRIBED);
                 MainActivityStarter mainActivityStarter = new MainActivityStarter(getContext());
@@ -257,8 +267,10 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
 
     private void refreshToolbarState() {
         boolean isSubscribed = feed != null && feed.getState() == Feed.STATE_SUBSCRIBED;
-        viewBinding.toolbar.getMenu().findItem(R.id.share_item).setVisible(isSubscribed && !feed.isLocalFeed());
-        viewBinding.toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(isSubscribed
+        boolean kidLock = UserPreferences.isKidLockActive(); // Kid lock: no website or share sheet
+        viewBinding.toolbar.getMenu().findItem(R.id.share_item).setVisible(isSubscribed && !feed.isLocalFeed()
+                && !kidLock);
+        viewBinding.toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(isSubscribed && !kidLock
                 && feed.getLink() != null
                 && IntentUtils.isCallable(getContext(), new Intent(Intent.ACTION_VIEW, Uri.parse(feed.getLink()))));
     }

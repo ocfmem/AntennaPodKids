@@ -585,7 +585,9 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        new RatingDialogManager(this).showIfNeeded();
+        if (!UserPreferences.isKidLockActive()) { // Kid lock: no rating prompt leading to the Play Store
+            new RatingDialogManager(this).showIfNeeded();
+        }
         getOnBackPressedDispatcher().addCallback(this, openDefaultPageBackPressedCallback);
         getOnBackPressedDispatcher().addCallback(this, bottomSheetBackPressedCallback);
     }
