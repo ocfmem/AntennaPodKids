@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.PreferenceFragmentCompat;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
@@ -14,12 +16,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.MessageEvent;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.Keyboard;
 import de.danoeh.antennapod.ui.common.ToolbarActivity;
 import de.danoeh.antennapod.ui.preferences.databinding.SettingsActivityBinding;
 import de.danoeh.antennapod.ui.preferences.screen.AutoDownloadPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.AutomaticDeletionPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.NotificationPreferencesFragment;
+import de.danoeh.antennapod.ui.preferences.screen.ParentalControlDialog;
 import de.danoeh.antennapod.ui.preferences.screen.synchronization.SynchronizationPreferencesFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,7 +37,9 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     private static final String FRAGMENT_TAG = "tag_preferences";
     public static final String OPEN_AUTO_DOWNLOAD_SETTINGS = "OpenAutoDownloadSettings";
     public static final String OPEN_PLAYBACK_SETTINGS = "OpenPlaybackSettings";
+    private static final String KEY_KID_LOCK_UNLOCKED = "kidLockUnlocked";
     private SettingsActivityBinding binding;
+    private boolean kidLockUnlocked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,32 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
         binding = SettingsActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        if (savedInstanceState != null) {
+            kidLockUnlocked = savedInstanceState.getBoolean(KEY_KID_LOCK_UNLOCKED, false);
+        }
+        if (UserPreferences.isKidLockActive() && !kidLockUnlocked) {
+            if (UserPreferences.isKidLockManaged()) {
+                // Kid lock from a device-owner app: settings open only once it lifts the lock.
+                Toast.makeText(this, R.string.kid_lock_settings_locked, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            ParentalControlDialog.show(this, () -> {
+                kidLockUnlocked = true;
+                showSettings();
+            }, this::finish);
+            return;
+        }
+        showSettings();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_KID_LOCK_UNLOCKED, kidLockUnlocked);
+    }
+
+    private void showSettings() {
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(binding.settingsContainer.getId(), new MainPreferencesFragment(), FRAGMENT_TAG)
