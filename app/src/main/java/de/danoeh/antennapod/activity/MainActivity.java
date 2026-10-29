@@ -420,6 +420,13 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public Fragment createFragmentInstance(String tag, Bundle args) {
         Log.d(TAG, "loadFragment(tag: " + tag + ", args: " + args + ")");
+        if (UserPreferences.isKidLockActive()
+                && (AddFeedFragment.TAG.equals(tag) || DiscoveryFragment.TAG.equals(tag))) {
+            // Kid lock: every route to adding or discovering podcasts (drawer, bottom navigation,
+            // intent extra, restored last page) lands on the home screen instead.
+            tag = HomeFragment.TAG;
+            args = null;
+        }
         Fragment fragment;
         switch (tag) {
             case HomeFragment.TAG:

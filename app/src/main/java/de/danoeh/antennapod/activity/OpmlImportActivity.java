@@ -64,6 +64,12 @@ public class OpmlImportActivity extends ToolbarActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: no podcast list can be imported.
+            Toast.makeText(this, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         viewBinding = OpmlSelectionBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());

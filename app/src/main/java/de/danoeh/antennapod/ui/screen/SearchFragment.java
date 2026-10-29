@@ -40,6 +40,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.ui.episodeslist.FeedItemMenuHandler;
 import de.danoeh.antennapod.net.discovery.CombinedSearcher;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.OnlineFeedviewActivityStarter;
 import de.danoeh.antennapod.ui.discovery.OnlineSearchFragment;
 import de.danoeh.antennapod.ui.common.EmptyViewHandler;
@@ -436,8 +437,9 @@ public class SearchFragment extends Fragment implements EpisodeItemListAdapter.O
                 || activeFilter.showInHistory || activeFilter.showPaused;
         boolean isSearchingFeed = feed != 0;
         updateChipVisibility();
+        boolean kidLock = UserPreferences.isKidLockActive(); // Kid lock: local search only
         adapterFeeds.setEndButton(R.string.search_online,
-                (isSearchingFeed || hasEpisodeFilter) ? null : this::searchOnline);
+                (isSearchingFeed || hasEpisodeFilter || kidLock) ? null : this::searchOnline);
 
         String query = searchView.getQuery().toString();
         if (query.isEmpty()) {

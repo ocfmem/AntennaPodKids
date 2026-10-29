@@ -70,6 +70,8 @@ public abstract class UserPreferences {
     public static final String PREF_KID_LOCK_ENABLED = "prefKidLockEnabled";
     /** Boolean app restriction through which a device-owner app (e.g. a kiosk) drives the kid lock. */
     public static final String RESTRICTION_KID_LOCK = "kid_lock";
+    /** AddFeedFragment.TAG (app module): removed from the drawer and bottom navigation under the kid lock. */
+    private static final String KID_LOCK_HIDDEN_SECTION = "AddFeedFragment";
 
     public static final String PREF_GLOBAL_DEFAULT_SORTED_ORDER = "prefGlobalDefaultSortedOrder";
     public static final String PREF_QUEUE_KEEP_SORTED = "prefQueueKeepSorted";
@@ -263,8 +265,9 @@ public abstract class UserPreferences {
         Arrays.sort(sectionTags, (String a, String b) -> Integer.signum(
                 indexOfOrMaxValue(itemOrderTags, a) - indexOfOrMaxValue(itemOrderTags, b)));
         List<String> finalItemTags = new ArrayList<>();
+        boolean kidLock = isKidLockActive();
         for (String sectionTag: sectionTags) {
-            if (hiddenItemTags.contains(sectionTag)) {
+            if (hiddenItemTags.contains(sectionTag) || (kidLock && KID_LOCK_HIDDEN_SECTION.equals(sectionTag))) {
                 continue;
             }
             finalItemTags.add(sectionTag);

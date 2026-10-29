@@ -194,6 +194,9 @@ public class SubscriptionFragment extends Fragment
             floatingSelectMenu.getMenu().removeItem(R.id.playback_speed);
             subscriptionAddButton.setVisibility(View.GONE);
         }
+        if (UserPreferences.isKidLockActive()) {
+            subscriptionAddButton.setVisibility(View.GONE);
+        }
         floatingSelectMenu.setOnMenuItemClickListener(menuItem -> {
             List<Feed> selection = subscriptionAdapter.getSelectedItems();
             new FeedMultiSelectActionHandler(getActivity(), selection)

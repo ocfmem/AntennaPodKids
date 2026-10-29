@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.ui.screen.drawer;
 
 import android.content.Context;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -19,6 +20,16 @@ public class DrawerPreferencesDialog extends ReorderDialog {
     public DrawerPreferencesDialog(Context context, Runnable onSettingsChanged) {
         super(context);
         this.onSettingsChanged = onSettingsChanged;
+    }
+
+    @Override
+    public void show() {
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: the navigation cannot be rearranged.
+            Toast.makeText(context, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        super.show();
     }
 
     @Override

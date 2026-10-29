@@ -94,6 +94,12 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(ThemeSwitcher.getTranslucentTheme(this));
         super.onCreate(savedInstanceState);
+        if (UserPreferences.isKidLockActive()) {
+            // Kid lock: podcasts can neither be previewed nor subscribed to.
+            Toast.makeText(this, R.string.kid_lock_blocked, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         viewBinding = OnlinefeedviewActivityBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
